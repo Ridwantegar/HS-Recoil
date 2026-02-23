@@ -213,9 +213,9 @@ Config.Weapons = {
     {
         name = 'WEAPON_MINISMG',
         model = 'w_sb_minismg',
-        recoil = 0.07,
-        damage = 0.70,
-        stress = 30.0,
+        recoil = 0.20,
+        damage = 1.0,
+        stress = 0.12,
         officer = { bone = 24818, x = 0.0, y = -0.135, z = 0.0, xRot = -180.0, yRot = 180.0, zRot = 0.0 },
         usual  = { bone = 24818, x = 0.0, y = -0.135, z = 0.0, xRot = -180.0, yRot = 180.0, zRot = 0.0 }
     },
