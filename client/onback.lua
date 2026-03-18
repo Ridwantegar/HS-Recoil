@@ -23,11 +23,24 @@ function checkEntityExist()
         if not DoesEntityExist(v.entity) then
             weaponCache[k] = nil
         elseif not IsEntityAttachedToEntity(v.entity, ped) then
-            DeleteEntity(v.entity)
             weaponCache[k] = nil
         end
     end
 end
+
+lib.onCache('ped', function(value)
+    ped = value
+
+    Wait(500)
+
+    for k, v in pairs(Weapons) do
+        if CheckItem(v.name) then
+            local hash = joaat(v.name)
+            removeWeapon(hash)
+            putOnBack(hash)
+        end
+    end
+end)
 
 ----------------------------------------------------------------
 -- PUT WEAPON ON BACK
@@ -96,6 +109,17 @@ end
 ----------------------------------------------------------------
 lib.onCache('ped', function(value)
     ped = value
+end)
+
+RegisterNetEvent('QBCore:Client:OnPlayerLoaded', function()
+    Wait(1000)
+
+    for k, v in pairs(Weapons) do
+        if CheckItem(v.name) then
+            local hash = joaat(v.name)
+            putOnBack(hash)
+        end
+    end
 end)
 
 ----------------------------------------------------------------

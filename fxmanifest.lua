@@ -1,5 +1,5 @@
-fx_version      'husen'
-game            'gta5'
+fx_version 'cerulean'
+game 'gta5'
 
 name            'hs_ricoil'
 author          'husen'

@@ -25,7 +25,7 @@ Config.Officer = {
 
 Config.Stress = {
     enabled = true,
-    defaultPerShot = 0.5,
+    defaultPerShot = 0.2,
     shotCooldown = 300,
     min = 0,
     max = 100
@@ -431,6 +431,7 @@ Config.Weapons = {
     damage = 0.72, 
     critical = false,
     recoil = 0.11,
+	stress = 0.0,
     officer = { bone = 24818, x = 0.125, y = -0.175, z = -0.125, xRot = 90.0, yRot = 180.0, zRot = 0.0},
     usual = { bone = 24818, x = 0.125, y = -0.175, z = -0.125, xRot = 90.0, yRot = 180.0, zRot = 0.0},
     model = 'w_ar_carbinerifle',
