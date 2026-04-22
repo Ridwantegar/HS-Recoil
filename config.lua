@@ -7,15 +7,15 @@ Config.PlayerLoaded = 'QBCore:Client:OnPlayerLoaded'
 Config.PlayerUnload = 'QBCore:Client:OnPlayerUnload'
 
 Config.CheckForUpdates  = true
-Config.Command          = 'fixweapon' -- command for clear all weapon on body
-Config.DisplayAmmo      = false -- display ammo on screen
-Config.DisplayCrosshair = false -- display default crosshair on screen
-Config.WhitelistWeapon  = false  -- if set true, then players cannot use weapons that are not in the Config.Weapons list.
-Config.DefaultDamage    = 0.0   -- default damage for weapons that are not listed
-Config.DefaultRecoil    = 5.0   -- default recoil for weapons that are not listed
+Config.Command          = 'fixweapon'
+Config.DisplayAmmo      = false
+Config.DisplayCrosshair = false
+Config.WhitelistWeapon  = false
+Config.DefaultDamage    = 0.0
+Config.DefaultRecoil    = 5.0
 Config.RecoilType       = 'mix' -- 'shakes', 'top', 'mix'
 Config.DisableStealth   = true
-Config.PropsOnBack      = true -- if true prop on back always on
+Config.PropsOnBack      = true
 Config.StressSystem     = '0r-hud' -- '0r-hud' atau 'qb-hud'
 
 Config.Officer = {
@@ -26,7 +26,20 @@ Config.Officer = {
 Config.Stress = {
     enabled = true,
     shotCooldown = 500,
-    shotsRequired = 5 -- default kalau weapon ga ada setting
+    shotsRequired = 5 -- default global
+}
+
+Config.Stress = {
+    enabled = true,
+
+    -- 🔥 Delay antar penambahan stress (ms)
+    shotCooldown = 500,
+
+    -- 🔥 Default kalau weapon tidak ada di config
+    defaultPerShot = 1,
+
+    -- 🔥 Default jumlah peluru sebelum nambah stress
+    shotsRequired = 5,
 }
 
 -- IMPORTANT!
@@ -34,14 +47,15 @@ Config.Stress = {
 -- YOU CAN GET WEAPON MODEL ON https://gtahash.ru/
 
 Config.Weapons = {
-  [`WEAPON_UNARMED`] = { -- weapon hash
-    name = 'WEAPON_UNARMED', -- weapon name
-    damage = 0.25, -- weapon damage
-    critical = false, -- critical or headshot
-    recoil = 0.0, -- weapon Recoil
-    officer = nil, -- location for weapon on body if player are officer (DON'T SET NIL)
-    usual = nil, -- location for weapon on body if player not officer (DON'T SET NIL)
-    model = nil, -- weapon model (DON'T SET NIL)
+  [`WEAPON_UNARMED`] = {
+    name = 'WEAPON_UNARMED',
+    damage = 0.25,
+    critical = false,
+    recoil = 0.0,
+    shotsRequired = 999, -- Melee tidak menimbulkan stress suara ledakan
+    officer = nil,
+    usual = nil,
+    model = nil,
     category = 'melee'
   },
 
@@ -50,6 +64,7 @@ Config.Weapons = {
     damage = 0.0,
     critical = false,
     recoil = 0.0,
+    shotsRequired = 20, -- Api menyembur agak lama baru stress
     officer = { bone = 24818, x = 65536.0, y = 65536.0, z = 65536.0, xRot = 0.0, yRot = 0.0, zRot = 0.0},
     usual = { bone = 24818, x = 65536.0, y = 65536.0, z = 65536.0, xRot = 0.0, yRot = 0.0, zRot = 0.0},
     model = 'w_am_jerrycan',
@@ -61,6 +76,7 @@ Config.Weapons = {
     damage = 0.25,
     critical = false,
     recoil = 0.001,
+    shotsRequired = 999, -- Melee
     officer = { bone = 51826, x = -0.01, y = 0.0, z = 0.1, xRot = -90.0, yRot = 180.0, zRot = 90.0},
     usual = { bone = 51826, x = -0.01, y = 0.0, z = 0.1, xRot = -90.0, yRot = 180.0, zRot = 90.0},
     model = 'w_me_nightstick',
@@ -72,6 +88,7 @@ Config.Weapons = {
     damage = 0.15, 
     critical = false,
     recoil = 0.001,
+    shotsRequired = 999, -- Melee
     officer = { bone = 57597, x = 0.1, y = -0.13, z = -0.1, xRot = 180.0, yRot = -180.0, zRot = 0.0},
     usual = { bone = 57597, x = 0.1, y = -0.13, z = -0.1, xRot = 180.0, yRot = -180.0, zRot = 0.0},
     model = 'w_me_flashlight',
@@ -83,6 +100,7 @@ Config.Weapons = {
     damage = 0.35, 
     critical = false,
     recoil = 0.001,
+    shotsRequired = 999, -- Melee
     officer = { bone = 57597, x = 0.1, y = -0.13, z = -0.12, xRot = 180.0, yRot = -180.0, zRot = 0.0},
     usual = { bone = 57597, x = 0.1, y = -0.13, z = -0.12, xRot = 180.0, yRot = -180.0, zRot = 0.0},
     model = 'prop_w_me_knife_01',
@@ -94,6 +112,7 @@ Config.Weapons = {
     damage = 0.1, 
     critical = false,
     recoil = 0.001,
+    shotsRequired = 999, -- Melee
     officer = { bone = 57597, x = 0.1, y = -0.13, z = -0.05, xRot = 180.0, yRot = -180.0, zRot = 90.0},
     usual = { bone = 57597, x = 0.1, y = -0.13, z = -0.05, xRot = 180.0, yRot = -180.0, zRot = 90.0},
     model = 'w_me_knuckle',
@@ -105,6 +124,7 @@ Config.Weapons = {
     damage = 0.2, 
     critical = false,
     recoil = 0.001,
+    shotsRequired = 999, -- Melee
     officer = { bone = 24818, x = 0.25, y = -0.135, z = -0.2, xRot = -180.0, yRot = 225.0, zRot = 0.0},
     usual = { bone = 24818, x = 0.25, y = -0.135, z = -0.2, xRot = -180.0, yRot = 225.0, zRot = 0.0},
     model = 'w_me_bat',
@@ -116,6 +136,7 @@ Config.Weapons = {
     damage = 0.25, 
     critical = false,
     recoil = 0.001,
+    shotsRequired = 999, -- Melee
     officer = { bone = 57597, x = 0.1, y = -0.13, z = -0.2, xRot = 180.0, yRot = -180.0, zRot = 0.0},
     usual = { bone = 57597, x = 0.1, y = -0.13, z = -0.2, xRot = 180.0, yRot = -180.0, zRot = 0.0},
     model = 'w_me_hatchet',
@@ -127,6 +148,7 @@ Config.Weapons = {
     damage = 0.5, 
     critical = false,
     recoil = 0.001,
+    shotsRequired = 999, -- Melee
     officer = { bone = 57597, x = 0.1, y = -0.13, z = -0.2, xRot = 180.0, yRot = -180.0, zRot = 0.0},
     usual = { bone = 57597, x = 0.1, y = -0.13, z = -0.2, xRot = 180.0, yRot = -180.0, zRot = 0.0},
     model = 'prop_ld_w_me_machette',
@@ -138,6 +160,7 @@ Config.Weapons = {
     damage = 0.35, 
     critical = false,
     recoil = 0.001,
+    shotsRequired = 999, -- Melee
     officer = { bone = 57597, x = 0.1, y = -0.13, z = -0.1, xRot = 180.0, yRot = -180.0, zRot = 0.0},
     usual = { bone = 57597, x = 0.1, y = -0.13, z = -0.1, xRot = 180.0, yRot = -180.0, zRot = 0.0},
     model = 'w_me_switchblade',
@@ -149,6 +172,7 @@ Config.Weapons = {
     damage = 0.45, 
     critical = false,
     recoil = 0.001,
+    shotsRequired = 999, -- Melee
     officer = { bone = 57597, x = 0.1, y = -0.13, z = -0.1, xRot = 180.0, yRot = -180.0, zRot = 0.0},
     usual = { bone = 57597, x = 0.1, y = -0.13, z = -0.1, xRot = 180.0, yRot = -180.0, zRot = 0.0},
     model = 'w_me_karambitknife_01',
@@ -160,6 +184,7 @@ Config.Weapons = {
     damage = 0.45, 
     critical = false,
     recoil = 0.001,
+    shotsRequired = 999, -- Melee
     officer = { bone = 24818, x = 0.5, y = -0.14, z = 0.0, xRot = 190.0, yRot = 185.0, zRot = 290.0},
     usual = { bone = 24818, x = 0.5, y = -0.14, z = 0.0, xRot = 190.0, yRot = 185.0, zRot = 290.0},
     model = 'w_me_sledgehammer',
@@ -171,6 +196,7 @@ Config.Weapons = {
     damage = 0.35, 
     critical = false,
     recoil = 0.001,
+    shotsRequired = 999, -- Melee
     officer = { bone = 57597, x = 0.1, y = -0.13, z = -0.1, xRot = 180.0, yRot = -180.0, zRot = 0.0},
     usual = { bone = 57597, x = 0.1, y = -0.13, z = -0.1, xRot = 180.0, yRot = -180.0, zRot = 0.0},
     model = 'w_me_wrench',
@@ -182,6 +208,7 @@ Config.Weapons = {
     damage = 0.35, 
     critical = false,
     recoil = 0.001,
+    shotsRequired = 999, -- Melee
     officer = { bone = 57597, x = 0.1, y = -0.13, z = -0.1, xRot = 180.0, yRot = -180.0, zRot = 0.0},
     usual = { bone = 57597, x = 0.1, y = -0.13, z = -0.1, xRot = 180.0, yRot = -180.0, zRot = 0.0},
     model = 'w_me_battleaxe',
@@ -193,6 +220,7 @@ Config.Weapons = {
     damage = 0.35, 
     critical = false,
     recoil = 0.001,
+    shotsRequired = 999, -- Melee
     officer = { bone = 24818, x = 0.2, y = -0.15, z = 0.12, xRot = 0.0, yRot = -120.0, zRot = 0.0},
     usual = { bone = 24818, x = 0.2, y = -0.15, z = 0.12, xRot = 0.0, yRot = -120.0, zRot = 0.0},
     model = 'w_me_katana',
@@ -204,6 +232,7 @@ Config.Weapons = {
     damage = 2.0, 
     critical = false,
     recoil = 0.001,
+    shotsRequired = 999, -- Melee
     officer = { bone = 24818, x = 0.2, y = -0.15, z = 0.12, xRot = 0.0, yRot = -120.0, zRot = 0.0},
     usual = { bone = 24818, x = 0.2, y = -0.15, z = 0.12, xRot = 0.0, yRot = -120.0, zRot = 0.0},
     model = 'w_me_cherrykat_lr',
@@ -216,6 +245,7 @@ Config.Weapons = {
     damage = 0.0, 
     critical = false,
     recoil = 0.1,
+    shotsRequired = 999, -- Taser suaranya kecil/nyetrum, tidak menimbulkan stress ledakan
     officer = { bone = 58271, x = -0.01, y = 0.05, z = -0.1, xRot = -70.0, yRot = 0.0, zRot = 0.0},
     usual = { bone = 58271, x = -0.01, y = 0.05, z = -0.1, xRot = -70.0, yRot = 0.0, zRot = 0.0},
     model = 'w_pi_stungun',
@@ -227,6 +257,7 @@ Config.Weapons = {
     damage = 0.85, 
     critical = false,
     recoil = 0.20,
+    shotsRequired = 5,
     officer = { bone = 51826, x = -0.01, y = 0.1, z = 0.07, xRot = -115.0, yRot = 0.0, zRot = 0.0},
     usual = { bone = 57597, x = -0.01, y = -0.175, z = 0.0, xRot = -180.0, yRot = 135.0, zRot = 0.0},
     model = 'w_pi_heavypistol',
@@ -238,6 +269,7 @@ Config.Weapons = {
     damage = 0.33, 
     critical = false,
     recoil = 0.6,
+    shotsRequired = 5,
     officer = { bone = 51826, x = -0.01, y = 0.1, z = 0.07, xRot = -115.0, yRot = 0.0, zRot = 0.0},
     usual = { bone = 57597, x = -0.01, y = -0.175, z = 0.0, xRot = -180.0, yRot = 135.0, zRot = 0.0},
     model = 'w_pi_revolver',
@@ -246,9 +278,10 @@ Config.Weapons = {
 
   [`WEAPON_NAVYREVOLVER`] = {
     name = 'WEAPON_NAVYREVOLVER',
-    damage = 0.0, 
+    damage = 0.55, 
     critical = false,
-    recoil = 2.0,
+    recoil = 0.9,
+    shotsRequired = 5,
     officer = { bone = 51826, x = -0.01, y = 0.1, z = 0.07, xRot = -115.0, yRot = 0.0, zRot = 0.0},
     usual = { bone = 57597, x = -0.01, y = -0.175, z = 0.0, xRot = -180.0, yRot = 135.0, zRot = 0.0},
     model = 'w_pi_wep2_gun',
@@ -260,6 +293,7 @@ Config.Weapons = {
     damage = 0.45, 
     critical = false,
     recoil = 0.08,
+    shotsRequired = 5,
     officer = { bone = 51826, x = -0.01, y = 0.1, z = 0.07, xRot = -115.0, yRot = 0.0, zRot = 0.0},
     usual = { bone = 57597, x = -0.01, y = -0.175, z = 0.0, xRot = -180.0, yRot = 135.0, zRot = 0.0},
     model = 'w_pi_appistol',
@@ -271,6 +305,7 @@ Config.Weapons = {
     damage = 0.50, 
     critical = false,
     recoil = 0.10,
+    shotsRequired = 5,
     officer = { bone = 51826, x = -0.01, y = 0.1, z = 0.07, xRot = -115.0, yRot = 0.0, zRot = 0.0},
     usual = { bone = 57597, x = -0.01, y = -0.175, z = 0.0, xRot = -180.0, yRot = 135.0, zRot = 0.0},
     model = 'w_pi_ceramic_pistol',
@@ -282,6 +317,7 @@ Config.Weapons = {
     damage = 0.80, 
     critical = false,
     recoil = 0.18,
+    shotsRequired = 5,
     officer = { bone = 51826, x = -0.01, y = 0.1, z = 0.07, xRot = -115.0, yRot = 0.0, zRot = 0.0},
     usual = { bone = 57597, x = -0.01, y = -0.175, z = 0.0, xRot = -180.0, yRot = 135.0, zRot = 0.0},
     model = 'w_pi_fnx45',
@@ -293,6 +329,7 @@ Config.Weapons = {
     damage = 0.65, 
     critical = false,
     recoil = 0.15,
+    shotsRequired = 5,
     officer = { bone = 51826, x = -0.01, y = 0.1, z = 0.07, xRot = -115.0, yRot = 0.0, zRot = 0.0},
     usual = { bone = 57597, x = -0.01, y = -0.175, z = 0.0, xRot = -180.0, yRot = 135.0, zRot = 0.0},
     model = 'w_pi_glock22',
@@ -304,6 +341,7 @@ Config.Weapons = {
     damage = 0.40, 
     critical = false,
     recoil = 0.15,
+    shotsRequired = 5,
     officer = { bone = 51826, x = -0.01, y = 0.1, z = 0.07, xRot = -115.0, yRot = 0.0, zRot = 0.0},
     usual = { bone = 57597, x = -0.01, y = -0.175, z = 0.0, xRot = -180.0, yRot = 135.0, zRot = 0.0},
     model = 'w_pi_glock18c',
@@ -315,6 +353,8 @@ Config.Weapons = {
     damage = 0.45, 
     critical = false,
     recoil = 0.18,
+    shotsRequired = 5,
+	stress = 1,
     officer = { bone = 51826, x = -0.01, y = 0.1, z = 0.07, xRot = -115.0, yRot = 0.0, zRot = 0.0},
     usual = { bone = 57597, x = -0.01, y = -0.175, z = 0.0, xRot = -180.0, yRot = 135.0, zRot = 0.0},
     model = 'w_pi_pistol',
@@ -323,9 +363,10 @@ Config.Weapons = {
 
   [`WEAPON_COMBATPISTOL`] = {
     name = 'WEAPON_COMBATPISTOL',
-    damage = 1.55, 
+    damage = 0.55, 
     critical = false,
     recoil = 0.1,
+    shotsRequired = 5,
     officer = { bone = 51826, x = -0.01, y = 0.1, z = 0.07, xRot = -115.0, yRot = 0.0, zRot = 0.0},
     usual = { bone = 57597, x = -0.01, y = -0.175, z = 0.0, xRot = -180.0, yRot = 135.0, zRot = 0.0},
     model = 'w_pi_combatpistol',
@@ -337,6 +378,7 @@ Config.Weapons = {
     damage = 0.72, 
     critical = false,
     recoil = 0.15,
+    shotsRequired = 5,
     officer = { bone = 51826, x = -0.01, y = 0.1, z = 0.07, xRot = -115.0, yRot = 0.0, zRot = 0.0},
     usual = { bone = 57597, x = -0.01, y = -0.175, z = 0.0, xRot = -180.0, yRot = 135.0, zRot = 0.0},
     model = 'w_pi_pistol_xm3',
@@ -345,10 +387,11 @@ Config.Weapons = {
 
   [`WEAPON_REVOLVER_MK2`] = {
     name = 'WEAPON_REVOLVER_MK2',
-    damage = 0.24, 
+    damage = 0.3, 
     critical = false,
     recoil = 0.85,
-    stress = 15,
+	stress = 1,
+    shotsRequired = 5,
     officer = { bone = 51826, x = -0.01, y = 0.1, z = 0.07, xRot = -115.0, yRot = 0.0, zRot = 0.0},
     usual = { bone = 57597, x = 0.15, y = -0.175, z = -0.05, xRot = -180.0, yRot = 135.0, zRot = 0.0},
     model = 'w_pi_revolvermk2',
@@ -360,6 +403,7 @@ Config.Weapons = {
     damage = 0.43, 
     critical = false,
     recoil = 0.17,
+    shotsRequired = 5,
     officer = { bone = 51826, x = -0.01, y = 0.1, z = 0.07, xRot = -115.0, yRot = 0.0, zRot = 0.0},
     usual = { bone = 57597, x = 0.15, y = -0.175, z = -0.05, xRot = -180.0, yRot = 135.0, zRot = 0.0},
     model = 'w_pi_pistol50',
@@ -371,6 +415,7 @@ Config.Weapons = {
     damage = 0.39, 
     critical = false,
     recoil = 0.14,
+    shotsRequired = 5,
     officer = { bone = 24818, x = 0.05, y = -0.135, z = 0.0, xRot = -180.0, yRot = 200.0, zRot = 0.0},
     usual = { bone = 24818, x = 0.05, y = -0.135, z = 0.0, xRot = -180.0, yRot = 200.0, zRot = 0.0},
     model = 'w_sb_compactsmg',
@@ -379,9 +424,10 @@ Config.Weapons = {
 
   [`WEAPON_DOUBLEACTION`] = {
     name = 'WEAPON_DOUBLEACTION',
-    damage = 0.0,
+    damage = 0.60, 
     critical = false,
-    recoil = 2.0,
+    recoil = 0.8,
+    shotsRequired = 5,
     officer = { bone = 51826, x = -0.01, y = 0.1, z = 0.07, xRot = -115.0, yRot = 0.0, zRot = 0.0},
     usual = { bone = 57597, x = -0.01, y = -0.175, z = 0.0, xRot = -180.0, yRot = 135.0, zRot = 0.0},
     model = 'w_pi_wep1_gun',
@@ -394,6 +440,7 @@ Config.Weapons = {
     damage = 0.70, 
     critical = false,
     recoil = 0.07,
+    shotsRequired = 5,
     officer = { bone = 24818, x = 0.0, y = -0.135, z = 0.0, xRot = -180.0, yRot = 180.0, zRot = 0.0},
     usual = { bone = 24818, x = 0.0, y = -0.135, z = 0.0, xRot = -180.0, yRot = 180.0, zRot = 0.0},
     model = 'w_sb_minismg',
@@ -402,9 +449,10 @@ Config.Weapons = {
 
   [`WEAPON_MICROSMG`] = {
     name = 'WEAPON_MICROSMG',
-    damage = 0.0,
+    damage = 0.35, 
     critical = false,
-    recoil = 2.0,
+    recoil = 0.08,
+    shotsRequired = 5,
     officer = { bone = 24818, x = 0.05, y = -0.135, z = 0.0, xRot = -180.0, yRot = 180.0, zRot = 0.0},
     usual = { bone = 24818, x = 0.05, y = -0.135, z = 0.0, xRot = -180.0, yRot = 180.0, zRot = 0.0},
     model = 'w_sb_microsmg',
@@ -416,6 +464,8 @@ Config.Weapons = {
     damage = 0.82, 
     critical = false,
     recoil = 0.07,
+    shotsRequired = 5,
+	stress = 0.5,
     officer = { bone = 24818, x = 0.05, y = -0.135, z = 0.0, xRot = -180.0, yRot = 180.0, zRot = 0.0},
     usual = { bone = 24818, x = 0.05, y = -0.135, z = 0.0, xRot = -180.0, yRot = 180.0, zRot = 0.0},
     model = 'w_sb_smg',
@@ -428,8 +478,7 @@ Config.Weapons = {
     damage = 0.72, 
     critical = false,
     recoil = 0.11,
-	  stress = 20,
-    shotsRequired = 40,
+    shotsRequired = 15, -- Rifle full auto, stress agak lama baru penuh
     officer = { bone = 24818, x = 0.125, y = -0.175, z = -0.125, xRot = 90.0, yRot = 180.0, zRot = 0.0},
     usual = { bone = 24818, x = 0.125, y = -0.175, z = -0.125, xRot = 90.0, yRot = 180.0, zRot = 0.0},
     model = 'w_ar_carbinerifle',
@@ -441,6 +490,8 @@ Config.Weapons = {
     damage = 0.69, 
     critical = false,
     recoil = 0.11,
+	stress = 0.8,
+    shotsRequired = 15,
     officer = { bone = 24818, x = 0.125, y = -0.175, z = -0.125, xRot = 90.0, yRot = 180.0, zRot = 0.0},
     usual = { bone = 24818, x = 0.125, y = -0.175, z = -0.125, xRot = 90.0, yRot = 180.0, zRot = 0.0},
     model = 'w_ar_assaultrifle',
@@ -452,8 +503,7 @@ Config.Weapons = {
     damage = 0.69, 
     critical = false,
     recoil = 0.11,
-    stress = 20,
-    shotsRequired = 40,
+    shotsRequired = 15,
     officer = { bone = 24818, x = 0.125, y = -0.175, z = -0.125, xRot = 90.0, yRot = 180.0, zRot = 0.0},
     usual = { bone = 24818, x = 0.125, y = -0.175, z = -0.125, xRot = 90.0, yRot = 180.0, zRot = 0.0},
     model = 'w_ar_specialcarbine',
@@ -461,12 +511,13 @@ Config.Weapons = {
   },
 
 
-  -- [[ SHOUTGUN ]] --
+  -- [[ SHOTGUN ]] --
   [`WEAPON_BULLPUPSHOTGUN`] = {
     name = 'WEAPON_BULLPUPSHOTGUN',
     damage = 0.7,
     critical = false,
     recoil = 0.2,
+    shotsRequired = 5,
     officer = { bone = 24818, x = 0.0, y = -0.15, z = 0.0, xRot = 0.0, yRot = 0.0, zRot = 0.0},
     usual = { bone = 24818, x = 0.0, y = -0.15, z = 0.0, xRot = 0.0, yRot = 0.0, zRot = 0.0},
     model = 'w_sg_bullpupshotgun',
@@ -474,9 +525,10 @@ Config.Weapons = {
   },
   [`WEAPON_MUSKET`] = {
     name = 'WEAPON_MUSKET',
-    damage = 0.1,
+    damage = 0.85,
     critical = false,
     recoil = 0.3,
+    shotsRequired = 5,
     officer = { bone = 24818, x = -0.1, y = -0.15, z = 0.0, xRot = 0.0, yRot = 0.0, zRot = 0.0},
     usual = { bone = 24818, x = -0.1, y = -0.15, z = 0.0, xRot = 0.0, yRot = 0.0, zRot = 0.0},
     model = 'w_ar_musket',
@@ -489,9 +541,10 @@ Config.Weapons = {
     damage = 2.0, 
     critical = false,
     recoil = 0.11,
+    shotsRequired = 3, -- Sniper suaranya keras, stress naik cepat
     officer = { bone = 24818, x = 0.2, y = -0.175, z = 0.125, xRot = 90.0, yRot = 180.0, zRot = 0.0},
     usual = { bone = 24818, x = 0.2, y = -0.175, z = 0.125, xRot = 90.0, yRot = 180.0, zRot = 0.0},
-    model = 'w_sr_heavysnipermk2',
+    model = 'w_sr_heavysniper',
     category = 'sniper'
   },
 
@@ -500,6 +553,7 @@ Config.Weapons = {
     damage = 2.0, 
     critical = false,
     recoil = 0.11,
+    shotsRequired = 3,
     officer = { bone = 24818, x = 0.2, y = -0.175, z = 0.125, xRot = 90.0, yRot = 180.0, zRot = 0.0},
     usual = { bone = 24818, x = 0.2, y = -0.175, z = 0.125, xRot = 90.0, yRot = 180.0, zRot = 0.0},
     model = 'w_sr_heavysnipermk2',
@@ -511,6 +565,7 @@ Config.Weapons = {
     damage = 2.0, 
     critical = false,
     recoil = 0.11,
+    shotsRequired = 3,
     officer = { bone = 24818, x = 0.2, y = -0.175, z = 0.125, xRot = 90.0, yRot = 180.0, zRot = 0.0},
     usual = { bone = 24818, x = 0.2, y = -0.175, z = 0.125, xRot = 90.0, yRot = 180.0, zRot = 0.0},
     model = 'w_sr_sniperrifle',
@@ -522,6 +577,7 @@ Config.Weapons = {
     damage = 5.0, 
     critical = false,
     recoil = 1.0,
+    shotsRequired = 5,
     officer = { bone = 24818, x = -0.2, y = -0.135, z = 0.0, xRot = -180.0, yRot = 180.0, zRot = 0.0},
     usual = { bone = 24818, x = -0.2, y = -0.135, z = 0.0, xRot = -180.0, yRot = 180.0, zRot = 0.0},
     model = 'w_lr_rpg',
