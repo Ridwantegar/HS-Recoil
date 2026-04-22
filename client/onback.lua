@@ -1,134 +1,215 @@
-local Weapons = Config.Weapons
-local weaponCache = {}
+-- ==================== onback.lua ====================
+local Weapons = Config.Weapons or {}
+local weaponCache = {}   -- { [hash] = { entity = obj } }
 local ped = cache.ped
+
+-- Perbaikan 1: Deklarasikan variabel agar tidak nil (undefined)
+local onVehicle = false
+local PlayerLoaded = false
+
+-- Perbaikan 2: Fungsi helper untuk cek item (Sesuaikan dengan inventory yang dipakai)
+-- Jika pakai ox_inventory:
+local function CheckItem(itemName)
+    if not itemName then return false end
+    -- Cek apakah item ada di inventory
+    local count = exports.ox_inventory:Search('count', itemName)
+    return count and count > 0
+end
 
 ----------------------------------------------------------------
 -- REMOVE WEAPON PROP
 ----------------------------------------------------------------
 function removeWeapon(hash)
-    if weaponCache[hash] then
-        if DoesEntityExist(weaponCache[hash].entity) then
-            DetachEntity(weaponCache[hash].entity, true, true)
-            DeleteEntity(weaponCache[hash].entity)
-        end
-        weaponCache[hash] = nil
+    if not weaponCache[hash] then return end
+
+    local data = weaponCache[hash]
+    if data.entity and DoesEntityExist(data.entity) then
+        DetachEntity(data.entity, true, true)
+        DeleteEntity(data.entity)
     end
+    weaponCache[hash] = nil
 end
 
 ----------------------------------------------------------------
 -- CLEAN INVALID ENTITIES
 ----------------------------------------------------------------
 function checkEntityExist()
-    for k, v in pairs(weaponCache) do
-        if not DoesEntityExist(v.entity) then
-            weaponCache[k] = nil
-        elseif not IsEntityAttachedToEntity(v.entity, ped) then
-            weaponCache[k] = nil
+    for hash, data in pairs(weaponCache) do
+        if not data.entity or not DoesEntityExist(data.entity) or not IsEntityAttachedToEntity(data.entity, ped) then
+            weaponCache[hash] = nil
         end
     end
 end
-
-lib.onCache('ped', function(value)
-    ped = value
-
-    Wait(500)
-
-    for k, v in pairs(Weapons) do
-        if CheckItem(v.name) then
-            local hash = joaat(v.name)
-            removeWeapon(hash)
-            putOnBack(hash)
-        end
-    end
-end)
 
 ----------------------------------------------------------------
 -- PUT WEAPON ON BACK
 ----------------------------------------------------------------
 function putOnBack(hash)
-    if not Weapons[hash] then return end
     if weaponCache[hash] then return end
+    if not Weapons[hash] then return end
 
-    while not PlayerData or not PlayerData.job do
-        Wait(50)
-    end
-
-    local job = PlayerData.job.name
     local weaponData = Weapons[hash]
+    if not weaponData.model then return end
 
+    -- Pilih posisi berdasarkan job
     local position = weaponData.usual
-    if Config.Officer and Config.Officer[job] then
-        position = weaponData.officer
+    
+    -- Perbaikan 3: Cek PlayerData dengan aman agar tidak error jika nil
+    -- Pastikan variabel PlayerData bisa diakses (Global / StateBag)
+    -- Jika pakai QBCore, biasanya ada di global atau perlu di-Get
+    local playerData = PlayerData or QBCore.Functions.GetPlayerData() -- Fallback safe check
+    
+    if playerData and playerData.job and playerData.job.name then
+        local job = playerData.job.name
+        if Config.Officer and Config.Officer[job] and weaponData.officer then
+            position = weaponData.officer
+        end
     end
 
-    if not position then return end
-
-    -- 🔥 65536 = disable attach
-    if position.x == 65536.0 then
-        return
-    end
+    if not position or position.x == 65536.0 then return end
 
     checkEntityExist()
 
-    local model = weaponData.model
-    if not model then return end
+    lib.requestModel(weaponData.model, 1500)
 
-    lib.requestModel(model, 1000)
-
-    local coords = GetEntityCoords(ped)
     local boneIndex = GetPedBoneIndex(ped, position.bone)
 
-    local prop = CreateObjectNoOffset(model, coords.x, coords.y, coords.z, true, false, false)
+    local prop = CreateObjectNoOffset(weaponData.model, 0.0, 0.0, 0.0, true, false, false)
 
     AttachEntityToEntity(
         prop,
         ped,
         boneIndex,
-        position.x,
-        position.y,
-        position.z,
-        position.xRot,
-        position.yRot,
-        position.zRot,
-        true,
-        true,
-        false,
-        true,
-        2,
-        true
+        position.x, position.y, position.z,
+        position.xRot, position.yRot, position.zRot,
+        true, true, false, false, 2, true
     )
 
-    weaponCache[hash] = {
-        entity = prop,
-        hash = hash
-    }
+    weaponCache[hash] = { entity = prop }
+    SetModelAsNoLongerNeeded(weaponData.model)
 end
 
 ----------------------------------------------------------------
--- UPDATE PED CACHE (ox_lib)
+-- REFRESH ALL BACK WEAPONS
+----------------------------------------------------------------
+function RefreshBackWeapons()
+    if not PlayerLoaded or onVehicle then return end
+
+    -- Gunakan cache.weapon dari ox_lib
+    local currentWeapon = cache.weapon or `WEAPON_UNARMED`
+
+    for hash, data in pairs(Weapons) do
+        if hash == currentWeapon then
+            removeWeapon(hash)
+        else
+            if CheckItem(data.name) then
+                putOnBack(hash)
+            else
+                removeWeapon(hash)
+            end
+        end
+    end
+end
+
+----------------------------------------------------------------
+-- PED CACHE
 ----------------------------------------------------------------
 lib.onCache('ped', function(value)
     ped = value
+    Wait(500)
+    RefreshBackWeapons()
 end)
 
-RegisterNetEvent('QBCore:Client:OnPlayerLoaded', function()
-    Wait(1000)
+----------------------------------------------------------------
+-- WEAPON CHANGE HANDLER
+----------------------------------------------------------------
+lib.onCache('weapon', function(newWeapon, oldWeapon)
+    if not PlayerLoaded or onVehicle then return end
 
-    for k, v in pairs(Weapons) do
-        if CheckItem(v.name) then
-            local hash = joaat(v.name)
-            putOnBack(hash)
+    -- Beri jeda sedikit agar animasi equip selesai
+    Wait(200)
+
+    -- Hanya perlu refresh, logika remove sudah tertangani di RefreshBackWeapons
+    -- Tapi memanggil remove explisit untuk senjata yang lama baru lebih 'responsif'
+    if oldWeapon and oldWeapon ~= `WEAPON_UNARMED` then
+        removeWeapon(oldWeapon)
+    end
+    
+    RefreshBackWeapons()
+end)
+
+----------------------------------------------------------------
+-- VEHICLE HANDLER
+----------------------------------------------------------------
+lib.onCache('vehicle', function(vehicle)
+    onVehicle = vehicle ~= false
+
+    if onVehicle then
+        -- Hapus semua senjata saat masuk kendaraan
+        for hash, _ in pairs(weaponCache) do
+            removeWeapon(hash)
         end
+    else
+        -- Munculkan lagi setelah keluar kendaraan
+        Wait(500)
+        RefreshBackWeapons()
     end
 end)
 
 ----------------------------------------------------------------
--- COMMAND TO CLEAR BACK WEAPONS
+-- OX_INVENTORY ITEM CHANGE
 ----------------------------------------------------------------
-RegisterCommand(Config.Command, function()
-    for k, v in pairs(Weapons) do
-        if CheckItem(v.name) then
-            local hash = joaat(v.name)
+RegisterNetEvent('ox_inventory:itemCount', function(itemName, totalCount)
+    if not PlayerLoaded or onVehicle then return end
+
+    -- Optimasi: Cek dulu apakah itemName ini ada di Config
+    local needsRefresh = false
+    for hash, data in pairs(Weapons) do
+        if data.name == itemName then
+            needsRefresh = true
+            break
+        end
+    end
+
+    if needsRefresh then
+        RefreshBackWeapons()
+    end
+end)
+
+----------------------------------------------------------------
+-- PLAYER LOADED
+----------------------------------------------------------------
+RegisterNetEvent('QBCore:Client:OnPlayerLoaded', function()
+    Wait(1500)
+    PlayerLoaded = true
+    RefreshBackWeapons()
+end)
+
+-- Tambahan: Handle Player Unloaded (logout)
+RegisterNetEvent('QBCore:Client:OnPlayerUnload', function()
+    PlayerLoaded = false
+    -- Bersihkan punggung saat logout
+    for hash, _ in pairs(weaponCache) do
+        removeWeapon(hash)
+    end
+end)
+
+----------------------------------------------------------------
+-- COMMAND CLEAR
+----------------------------------------------------------------
+RegisterCommand(Config.Command or 'clearback', function()
+    for hash, _ in pairs(weaponCache) do
+        removeWeapon(hash)
+    end
+    print("^2Semua weapon di punggung sudah dihapus.")
+end, false)
+
+----------------------------------------------------------------
+-- CLEANUP
+----------------------------------------------------------------
+AddEventHandler('onResourceStop', function(resource)
+    if resource == GetCurrentResourceName() then
+        for hash, _ in pairs(weaponCache) do
             removeWeapon(hash)
         end
     end

@@ -25,10 +25,8 @@ Config.Officer = {
 
 Config.Stress = {
     enabled = true,
-    defaultPerShot = 0.2,
-    shotCooldown = 300,
-    min = 0,
-    max = 100
+    shotCooldown = 500,
+    shotsRequired = 5 -- default kalau weapon ga ada setting
 }
 
 -- IMPORTANT!
@@ -36,7 +34,6 @@ Config.Stress = {
 -- YOU CAN GET WEAPON MODEL ON https://gtahash.ru/
 
 Config.Weapons = {
-  -- [[ MALE ]] --
   [`WEAPON_UNARMED`] = { -- weapon hash
     name = 'WEAPON_UNARMED', -- weapon name
     damage = 0.25, -- weapon damage
@@ -351,7 +348,7 @@ Config.Weapons = {
     damage = 0.24, 
     critical = false,
     recoil = 0.85,
-    stress = 0.2,
+    stress = 15,
     officer = { bone = 51826, x = -0.01, y = 0.1, z = 0.07, xRot = -115.0, yRot = 0.0, zRot = 0.0},
     usual = { bone = 57597, x = 0.15, y = -0.175, z = -0.05, xRot = -180.0, yRot = 135.0, zRot = 0.0},
     model = 'w_pi_revolvermk2',
@@ -431,7 +428,8 @@ Config.Weapons = {
     damage = 0.72, 
     critical = false,
     recoil = 0.11,
-	stress = 0.0,
+	  stress = 20,
+    shotsRequired = 40,
     officer = { bone = 24818, x = 0.125, y = -0.175, z = -0.125, xRot = 90.0, yRot = 180.0, zRot = 0.0},
     usual = { bone = 24818, x = 0.125, y = -0.175, z = -0.125, xRot = 90.0, yRot = 180.0, zRot = 0.0},
     model = 'w_ar_carbinerifle',
@@ -448,6 +446,20 @@ Config.Weapons = {
     model = 'w_ar_assaultrifle',
     category = 'assault'
   },
+
+  [`WEAPON_SPECIALCARBINE`] = {
+    name = 'WEAPON_SPECIALCARBINE',
+    damage = 0.69, 
+    critical = false,
+    recoil = 0.11,
+    stress = 20,
+    shotsRequired = 40,
+    officer = { bone = 24818, x = 0.125, y = -0.175, z = -0.125, xRot = 90.0, yRot = 180.0, zRot = 0.0},
+    usual = { bone = 24818, x = 0.125, y = -0.175, z = -0.125, xRot = 90.0, yRot = 180.0, zRot = 0.0},
+    model = 'w_ar_specialcarbine',
+    category = 'assault'
+  },
+
 
   -- [[ SHOUTGUN ]] --
   [`WEAPON_BULLPUPSHOTGUN`] = {

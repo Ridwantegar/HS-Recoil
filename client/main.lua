@@ -53,28 +53,39 @@ if Config.Core == 'ESX' then
   end)
 end
 
+local currentHolding = nil -- Variabel baru untuk mencatat senjata terakhir
+
 Citizen.CreateThread(function()
   while true do
-    Wait(500)
-    local _, hash = GetCurrentPedWeapon(ped, false)
-    local weaponsConfig = Config.Weapons[hash]
-    if hash ~= GetHashKey('WEAPON_UNARMED') then
-      curWeapon = hash
-      hasWeapon = true
-    else
-      curWeapon = nil
-      hasWeapon = false
-    end
+    Wait(500) -- Cek setiap 0.5 detik
+    
     if (Core ~= nil and PlayerLoaded) or Config.PropsOnBack then
-      if weaponsConfig and not onVehicle then
-        for k, v in pairs(Config.Weapons) do
-          if hash == k then
-            removeWeapon(hash)
-          else
-            if CheckItem(v.name) then
-              putOnBack(k)
-            else
-              removeWeapon(k)
+      local _, hash = GetCurrentPedWeapon(ped, false)
+      
+      -- HANYA JALANKAN JIKA SENJATA DI TANGAN BERUBAH
+      if hash ~= currentHolding then 
+        currentHolding = hash -- Update catatan senjata sekarang
+        
+        if hash ~= GetHashKey('WEAPON_UNARMED') then
+          curWeapon = hash
+          hasWeapon = true
+          
+          -- Hapus dari punggung HANYA SEKALI saat senjata dikeluarkan
+          removeWeapon(hash) 
+        else
+          curWeapon = nil
+          hasWeapon = false
+        end
+
+        -- Update semua senjata lain di punggung
+        if not onVehicle then
+          for k, v in pairs(Config.Weapons) do
+            if hash ~= k then -- Jika bukan senjata yang sedang dipegang
+              if CheckItem(v.name) then
+                putOnBack(k)
+              else
+                removeWeapon(k)
+              end
             end
           end
         end
@@ -82,6 +93,12 @@ Citizen.CreateThread(function()
     end
   end
 end)
+
+if Config.Core == 'QB' then
+    RegisterNetEvent('QBCore:Client:OnJobUpdate', function(JobInfo)
+        PlayerData.job = JobInfo
+    end)
+end
 
 lib.onCache('vehicle', function(value)
   if (Core ~= nil and PlayerLoaded) or Config.PropsOnBack then
@@ -130,6 +147,7 @@ function putOnBack(hash)
     end
 
     local obj = CreateObject(weaponConfig.model, 1.0, 1.0, 1.0, true, true, false)
+    SetModelAsNoLongerNeeded(weaponConfig.model)
 
     AttachEntityToEntity(
         obj,
